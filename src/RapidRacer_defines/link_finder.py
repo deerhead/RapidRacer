@@ -9,10 +9,10 @@ class Finder():
 	
 	def __init__(self):
 		
-		self.opener 	 = FancyURLopener()
+		self.__opener 	 = FancyURLopener()
 		self.__content	 = 0
 		self.__page 	 = ""
-		self.url		 = ""
+		self.__url		 = ""
 
 	def __gen_search_url(self,keyword_list,site):
 		
@@ -34,16 +34,17 @@ class Finder():
 
 		# Call the self.__gen_search_url method with the given
 		# keyword_list as parameter
-		self.url = self.__gen_search_url(keyword_list,site)
+		self.__url = self.__gen_search_url(keyword_list,site)
 
-		# Get data by opening the generated url with an instance
+		# Get data by opening the generated self.__url with an instance
 		# of the FancyURLopener
-		self.__content = self.opener.open(self.url)
+		self.__content = self.__opener.open(self.__url)
+		return self.__url
 	
 	def get_page(self, url):
 		
-		self.url = url
-		self.__content = self.opener.open(self.url)
+		self.__url = url
+		self.__content = self.__opener.open(self.__url)
 
 	def search_any_links_on_site(self,ignored_cont=[]):
 		
