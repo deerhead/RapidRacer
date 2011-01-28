@@ -31,7 +31,7 @@ class Finder():
 			return 4
 
 		link_list	= []
-		tmp_list	= re.findall(r"http://\S*[\",\,]?"[0:-1],
+		tmp_list	= re.findall(r"http://"+REGEXP_URL,
 								self.__content)
 
 		for element in tmp_list:
@@ -51,8 +51,8 @@ class Finder():
 		if not self.__content:
 			return 4
 		
-		link_list = (re.findall(r"http://www.rapidshare.com[\w,/,\\,\.]*",self.__content)+
-					 re.findall(r"http://rapidshare.com[\w,/,\\,\.]*"    ,self.__content))
+		link_list = (re.findall(r"http://www.rapidshare.com"+REGEXP_URL,self.__content)+
+					 re.findall(r"http://rapidshare.com"+REGEXP_URL    ,self.__content))
 
 		return link_list
 	

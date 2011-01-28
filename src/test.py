@@ -14,7 +14,8 @@ if __name__ == "__main__":
 	search1.debug_get_url()
 	
 	for url in search1.get_link_list():
-		
+		if not "filestube" in url:
+			continue
 		try:
 			print url
 			search2 = link_finder.Finder(url)

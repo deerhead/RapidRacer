@@ -1,6 +1,7 @@
 # coding: utf8
 
 AND = "&"
+REGEXP_URL = r"[\w,\-,+,\\,/,&,=,.]*"
 
 #### FilesTube ####
 FT_URL                  = "http://www.filestube.com/"
