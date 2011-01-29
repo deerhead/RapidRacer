@@ -12,7 +12,8 @@ if __name__ == "__main__":
         
     for u in range(10):
 
-        search3.load_page_nr(u)    
+        search3.set_page_nr(u)    
+        search3.reload_page()
         for url in search3.get_link_list():
             try:
                 print url

@@ -73,10 +73,6 @@ class Finder():
         
         return self.__rs_link_list
     
-    def get_content(self):
-        
-        return self.__content
-    
     def get_ignored_content(self):
         
         return self.__ignored_cont
@@ -84,6 +80,10 @@ class Finder():
     def get_url(self):
         
         return self.__url
+    
+    def reload_page(self):
+        
+        self.__setup_finder(self.__url)
 
 
 class GoogleSearch(Finder):
@@ -101,21 +101,19 @@ class GoogleSearch(Finder):
                      + AND + GOOGLE_SEARCH_PAGE(self.__page_nr))
         return tmp_url
     
-    def load_page_nr(self, page_nr):
+    def set_page_nr(self, page_nr):
         
         if type(page_nr) == str:
             raise TypeError("load_page_nr takes an integer as argument")
             
         self.__page_nr = str(page_nr)
-        Finder.__init__(self, self.__gen_search_url(), ["google"])
     
-    def load_keyords(self, keyword_list):
+    def set_keyords(self, keyword_list):
         
         if type(keyword_list) == list:
             raise TypeError("load_keywords takes a list as argument")
             
         self.__keyword_list = keyword_list
-        Finder.__init__(self, self.__gen_search_url(), ["google"])
     
 
 class FilesTubeSearch(Finder):
@@ -140,33 +138,22 @@ class FilesTubeSearch(Finder):
                    FT_SEARCH_HOSTS(self.__host_list) + AND + 
                    FT_SEARCH_PAGE(self.__page_nr))
         return tmp_url
-        
-    def __search_source_link(self):
-        
-        """
-        Sucht auf der Seite eines Einzelnen Suchergebnisses den
-        Link zur Quelle, auf der der Link ursprünglich liegt
-        """
-        
-        pass
     
-    def load_page_nr(self, page_nr):
+    def set_page_nr(self, page_nr):
         
         if type(page_nr) == str:
             raise TypeError("load_page_nr takes an integer as argument")
             
         self.__page_nr = str(page_nr)
-        Finder.__init__(self, self.__gen_search_url(), ["google"])
     
-    def load_keyords(self, keyword_list):
+    def set_keyords(self, keyword_list):
         
         if type(keyword_list) == list:
             raise TypeError("load_keywords takes a list as argument")
             
         self.__keyword_list = keyword_list
-        Finder.__init__(self, self.__gen_search_url())
     
-    def load_hosts(self, host_list):
+    def set_hosts(self, host_list):
         
         """
         Modifiziert die Such-URL, holt Content der Suche mit den
@@ -177,7 +164,6 @@ class FilesTubeSearch(Finder):
             raise TypeError("load_hosts takes a list as argument")
             
         self.__host_list = host_list
-        Finder.__init__(self, self.__gen_search_url())
         
     def debug_get_url(self):
         
