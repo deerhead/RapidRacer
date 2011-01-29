@@ -7,16 +7,22 @@ if __name__ == "__main__":
     file1.reset_url("http://rapidshare.com/files/305232527/BatyasSeele.part1.rar.html")
     print file1.get_status()
     
-    ### Doesnt work, don't know why... ###
-    search3 = link_finder.GoogleSearch(["the","acacia","strain","rapidshare"])
-    print search3.get_link_list()
-    for url in search3.get_link_list():
-        try:
-            print url
-            search4 = link_finder.Finder(url)
-            print search4.get_rs_link_list()
-        except:
-            continue
+    search3 = link_finder.FilesTubeSearch(["the","acacia","strain"],
+                                          [FT_SEARCH_RAPIDSHARE])
+        
+    for u in range(10):
+
+        search3.load_page_nr(u)    
+        for url in search3.get_link_list():
+            try:
+                print url
+                search4 = link_finder.Finder(url)
+                print search4.get_rs_link_list()
+            except:
+                print "error"
+                continue
+        print "_______________________________________"
+
            
 #    search1 = link_finder.FilesTubeSearch(["the", "acacia", "strain"],
 #                                         [FT_SEARCH_RAPIDSHARE])
