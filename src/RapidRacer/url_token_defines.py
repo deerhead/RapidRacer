@@ -31,9 +31,12 @@ def FT_SEARCH_KEYWORDS(keyword_list):
 ###################
 
 #### Rapidshare API ####
-RS_API_URL = "http://api.rapidshare.com/cgi-bin/rsapi.cgi?"
-RS_API_CHECK_FILES = "sub=checkfiles&files=" 
-RS_API_ADD_FILE = lambda file_id, filename: file_id + "&" + "filenames=" + filename
+RS_API_URL          = "http://api.rapidshare.com/cgi-bin/rsapi.cgi?"
+RS_API_CHECK_FILES  = "sub=checkfiles&files=" 
+RS_API_ADD_FILE     = lambda file_id, filename: file_id + "&" + "filenames=" + filename
+RS_FILE_OK          = 1
+RS_FILE_NOT_FOUND   = 0
+RS_FILE_OK_PLUS     = 50
 ########################
 
 #### Google Search ####

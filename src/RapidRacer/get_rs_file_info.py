@@ -119,4 +119,4 @@ class RSFile():
         Zitat Ende
         """
         
-        return self.__status
+        return int(self.__status)
