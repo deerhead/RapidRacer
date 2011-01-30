@@ -1,12 +1,13 @@
 RapidRacer
 ==========
 
-A tool to search one-click-hoster links and checks if the file is online
+A tool to search one-click-hoster links and check if the file is online
 
 
 Requirenments
 ----------
 -python2
+
 -python-tk
 
 
