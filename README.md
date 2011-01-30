@@ -6,9 +6,9 @@ A tool to search one-click-hoster links and check if the file is online
 
 Requirenments
 ----------
--python2
+- python2
 
--python-tk
+- python-tk
 
 
 Changelog
