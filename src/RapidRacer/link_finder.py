@@ -4,6 +4,9 @@ from url_token_defines import *
 from get_rs_file_info import *
 import re
 
+class HostError(Exception):
+    def __init__(self,host):
+        self.__host = host
 
 class Finder():
     
@@ -57,8 +60,8 @@ class Finder():
 
         # Get page content and search everything, that looks like a
         # rapidshare link via regexp       
-        link_list = (re.findall(r"http://www.rapidshare.com" + REGEXP_URL, self.__content) + 
-                     re.findall(r"http://rapidshare.com" + REGEXP_URL    , self.__content))
+        link_list = (re.findall(r"http://www.rapidshare.com/files" + REGEXP_URL, self.__content) + 
+                     re.findall(r"http://rapidshare.com/files" + REGEXP_URL    , self.__content))
 
         return link_list
     
@@ -104,13 +107,13 @@ class Finder():
         
         self.__ignored_cont = ignored_cont
         
-    def reload_page(self):
+    def reload_page(self,url):
         
         """
         Reloads the current page.
         """
         
-        self.__setup_finder(self.__url)
+        self.__setup_finder(url)
 
 
 class GoogleSearch(Finder):
@@ -119,14 +122,41 @@ class GoogleSearch(Finder):
     Describes a search at Google.com. Inherits form 'Finder' 
     """
     
-    def __init__(self, keyword_list):
+    def __init__(self, keyword_list, host_list=[]):
+        
+        if not type(host_list) == list:
+            raise TypeError("The second parameter has to be a list")
         
         # Set some essential variables
         self.__page_nr = "0"
-        self.__keyword_list = keyword_list
+        self.__keyword_list = keyword_list+self.__check_host_list(host_list)
+        self.__url = self.__gen_search_url()
         
-        Finder.__init__(self, self.__gen_search_url(), ["google"])
+        Finder.__init__(self, self.__url, ["google"])
         
+    def reload_page(self):
+        
+        Finder.reload_page(self,self.__url)
+        
+    def __check_host_list(self,host_list):
+            
+        # Set self.__host and raise a HostError if the given
+        # one-click-hoster name isn't known
+        tmp_host_list = []
+        for host in host_list:
+            host.lower().strip()
+            if      host == "rapidshare" or host == "rs":
+                tmp_host_list.append(host)
+            elif    host == "megaupload" or host == "mu":
+                tmp_host_list.append(host)
+            elif    host == "hotfile"    or host == "hf":
+                tmp_host_list.append(host)
+            elif    host == "uploaded"   or host == "ul":
+                tmp_host_list.append(host)
+            else:
+                raise HostError(host)
+            return tmp_host_list
+            
     def __gen_search_url(self):
         
         # Generates a valid Google search URL
@@ -145,6 +175,7 @@ class GoogleSearch(Finder):
             raise TypeError("load_page_nr takes an integer as argument")
             
         self.__page_nr = str(page_nr)
+        self.__url = self.__gen_search_url()
     
     def set_keyords(self, keyword_list):
         
@@ -157,7 +188,12 @@ class GoogleSearch(Finder):
             raise TypeError("load_keywords takes a list as argument")
             
         self.__keyword_list = keyword_list
-    
+        self.__url = self.__gen_search_url()
+        
+    def get_url(self):
+        
+        return self.__url
+
 
 class FilesTubeSearch(Finder):
 
@@ -165,14 +201,40 @@ class FilesTubeSearch(Finder):
     Describes a search at FilesTube.com. Inherits from 'Finder'
     """
     
-    def __init__(self, keyword_list, host_list):
-
+    def __init__(self, keyword_list, host_list=[]):
+        
+        if not type(host_list) == list:
+            raise TypeError("The second parameter has to be a list")
+        
         self.__page_nr = "1"
         self.__keyword_list = keyword_list
-        self.__host_list = host_list
         
-        Finder.__init__(self, self.__gen_search_url())
+        self.__host_list = []
+        self.__gen_host_list(host_list)
+        self.__url = self.__gen_search_url()
+        Finder.__init__(self, self.__url)
         
+    def reload_page(self):
+        
+        Finder.reload_page(self,self.__url)
+        
+    def __gen_host_list(self,host_list):
+        
+        # Set self.__host and raise a HostError if the given
+        # one-click-hoster name isn't known
+        for host in host_list:
+            host.lower().strip()
+            if      host == "rapidshare" or host == "rs":
+                self.__host_list.append(FT_SEARCH_RAPIDSHARE)
+            elif    host == "megaupload" or host == "mu":
+                self.__host_list.append(FT_SEARCH_MEGAUPLOAD)
+            elif    host == "hotfile"    or host == "hf":
+                self.__host_list.append(FT_SEARCH_HOTFILE)
+            elif    host == "uploaded"   or host == "ul":
+                self.__host_list.append(FT_SEARCH_UPLOADED)
+            else:
+                raise HostError(host)
+            
     def __gen_search_url(self):
         
         # Generates a valid FilesTube search URL
@@ -187,10 +249,12 @@ class FilesTubeSearch(Finder):
         """
         Sets the new page number and overwrites the old one
         """
+        
         if type(page_nr) == str:
             raise TypeError("load_page_nr takes an integer as argument")
             
         self.__page_nr = str(page_nr)
+        self.__url = self.__gen_search_url()
     
     def set_keyords(self, keyword_list):
         
@@ -202,6 +266,7 @@ class FilesTubeSearch(Finder):
             raise TypeError("load_keywords takes a list as argument")
             
         self.__keyword_list = keyword_list
+        self.__url = self.__gen_search_url()
     
     def set_hosts(self, host_list):
         
@@ -213,3 +278,8 @@ class FilesTubeSearch(Finder):
             raise TypeError("load_hosts takes a list as argument")
             
         self.__host_list = host_list
+        self.__url = self.__gen_search_url()
+    
+    def get_url(self):
+        
+        return self.__url

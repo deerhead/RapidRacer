@@ -7,9 +7,10 @@ REGEXP_URL = r"[\w,\-,+,\\,/,&,=,.]*"
 FT_URL = "http://www.filestube.com/"
 
 FT_SEARCH = "search.html?"
-FT_SEARCH_RAPIDSHARE = "1"
-FT_SEARCH_MEGAUPLOAD = "3"
-FT_SEARCH_HOTFILE = "27"
+FT_SEARCH_RAPIDSHARE    = "1"
+FT_SEARCH_MEGAUPLOAD    = "3"
+FT_SEARCH_UPLOADED      = "24"
+FT_SEARCH_HOTFILE       = "27"
 
 FT_SEARCH_PAGE = lambda page: "page=" + str(page)
 
@@ -51,4 +52,3 @@ def GOOGLE_SEARCH_KEYS(keyword_list):
         search_var = search_var + keyword + "+"
     return search_var[0:-1]
 #######################
-
