@@ -1,0 +1,4 @@
+- Write a TkGui
+- Find source (filestube)
+- Search deeper (google)
+- End the program with Ctrl+C

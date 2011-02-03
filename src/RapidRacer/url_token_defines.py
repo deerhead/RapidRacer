@@ -1,7 +1,7 @@
 # coding: utf8
 
 AND = "&"
-REGEXP_URL = r"[\w,\-,+,\\,/,&,=,.]*"
+REGEXP_URL = r"[\w,\-,+,\\,/,&,=,.,?,(,)]*"
 
 #### FilesTube ####
 FT_URL = "http://www.filestube.com/"
@@ -14,6 +14,12 @@ FT_SEARCH_HOTFILE       = "27"
 
 FT_SEARCH_PAGE = lambda page: "page=" + str(page)
 
+def FT_SEARCH_FILETYPE(filetype_list):
+
+    host_var = "select="
+    for host in filetype_list:
+        host_var = host_var + host + ","
+    return host_var[0:-1]
 
 def FT_SEARCH_HOSTS(host_list):
 
