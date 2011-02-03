@@ -6,71 +6,41 @@ from url_token_defines import *
 class RSFile():
     
     """
-    Vertritt eine Datei die auf Rapidshare liegt und enthält Informationen zu der Datei
+    Describes a file, hosted on rapidshare
     """
     
     def __init__(self, url):
         
-        """
-        Variablen werden erst leer gesetzt, danach anhand der lokalen Variablen
-        definiert.
-        """
-        
         self.__opener = FancyURLopener()
-        self.__url = url
-
-        ### Nun werde alle notwendigen, privaten Variablen und Listen 'deklariert'.
-        ### Definiert werden sie durch den Aufruf verschiedener Methoden
-
         self.__url_parsed = []
-
-        self.__filename = ""
-        self.__file_id = ""
-        self.__size = ""
-        self.__server_id = ""
-        self.__status = ""
-        self.__short_host = ""
-        self.__md5 = ""
-
-        ### Teilt die übergebene URL in ihre Bestandteile auf ###
-        self.__parse_url()
-        ### Überprüft die Korrektheit der übergebene URL ###
+        
+        self.__parse_url(url)
         self.__check_url()
 
-        ### Setzt self.__filename und self.__file_id. Es wird davon ausgegangen,            ###
-        ### dass das letzte und zweitletzte Element von self.__url_parsed Dateinamen###
-        ### und Datei-ID sind.                                                                                        ###
-        self.__filename = self.__url_parsed[len(self.__url_parsed) - 1]
-        self.__file_id = self.__url_parsed[len(self.__url_parsed) - 2]
+        # Detect filename and file ID                                                                                     ###
+        self.__filename = self.__url_parsed[-1]
+        self.__file_id = self.__url_parsed[-2]
     
         ### Holt Daten anhand der zuvor definierten URL und speichert sie in den ###
         ### betreffenden Variablen                                                                          ###
         self.__get_info()
 
-    def __parse_url(self):
+    def __parse_url(self,url):
         
-        """
-        Teilt self.__url an jedem "/" und hängt es an self.__url_parsed wenn es
-        länger als 0 ist.
-        """
-        
-        for p in self.__url.split("/"):
+        #Parses the given URL and defines the url_parsed attribute
+        for p in url.split("/"):
             if len(p):
                 self.__url_parsed.append(p)
     
     def __frame_info_url(self, file_id, filename):
         
-        """
-        Fügt alle bestandteile zu einer Rapidshare-API-URL zusammen
-        """
-        
+        #Frames a rapidshare URL
         return RS_API_URL + RS_API_CHECK_FILES + RS_API_ADD_FILE(file_id, filename)
         
     def __check_url(self):
 
-        """
-        Überprüft die korrektheit der übergebenen URL.
-        """
+        #Checks if the given link is a valid rapidshare-URL
+        
         if len(self.__url_parsed) < 5:
             raise SyntaxError("Scheint kein Rapidshare-Link zu sein")
         if (self.__url_parsed[1] != "rapidshare.com" and
@@ -78,11 +48,8 @@ class RSFile():
             raise SyntaxError("Scheint kein Rapidshare-Link zu sein")
 
     def __get_info(self):
-        
-        """
-        Holt die Daten aus dem Internet und übergibt sie den privaten, lokalen
-        Variablen.
-        """
+
+        # Gets the informations and defines the matching variables
         
         answer = self.__opener.open(
         self.__frame_info_url(self.__file_id, self.__filename))
@@ -93,7 +60,7 @@ class RSFile():
     def reset_url(self, url):
         
         """
-        Ruft self.__init__ erneut auf und übergibt die neue URL
+        Calls self.__init__ again
         """
         
         self.__init__(url)
@@ -102,8 +69,8 @@ class RSFile():
     def get_status(self):
         
         """
-        Gibt den Status der Datei aus.
-        Zitat aus der Dokumentation der API von Rapidshare:
+        Returns the file status. The section about the file status from
+        rapidshare API documentation:
         
         ''5:Status integer, which can have the following numeric values:
             0    = File not found
@@ -115,8 +82,7 @@ class RSFile():
             50+n = File OK (TrafficShare direct download type "n" without any logging.)
             100+n = File OK (TrafficShare direct download type "n" with logging. 
                            Read our privacy policy to see what is logged.)''
-        
-        Zitat Ende
+
         """
         
-        return self.__status
+        return int(self.__status)
