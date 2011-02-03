@@ -9,6 +9,7 @@ files to ignore
 
 #IDE files to ignore (Netbeans, Eclipse)
 nbproject/private/
+TODO.txt
 .classpath
 .project
 .settings
