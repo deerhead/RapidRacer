@@ -268,12 +268,8 @@ class GoogleSearch(Finder):
             
         self.__keyword_list = keyword_list
         self.__url = self.__gen_search_url()
-        
-    def get_url(self):
-        
-        Finder.get_url(self)
-
-
+     
+     
 class FilesTubeSearch(Finder):
 
     """
@@ -391,11 +387,3 @@ class FilesTubeSearch(Finder):
             
         self.__host_list = host_list
         self.__url = self.__gen_search_url()
-    
-    def get_url(self):
-        
-        Finder.get_url(self)
-    
-    def get_link_source(self):
-        
-        return self.__link_source

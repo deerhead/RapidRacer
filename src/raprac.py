@@ -5,6 +5,7 @@ from RapidRacer.get_rs_file_info import RSFile
 from RapidRacer.link_finder import *
 from RapidRacer.url_token_defines import *
 import threading
+from time import sleep
 
 def check_for_rs_links(link):
     
@@ -192,6 +193,7 @@ if __name__ == "__main__":
     # Checks the status of the found rapidshare links
     for site in link_dict.keys():
         print site
+        sleep(0.5)
         if options.host == "rapidshare":
             for link in link_dict[site]:
                 if (RSFile(link).get_status()==RS_FILE_OK or
