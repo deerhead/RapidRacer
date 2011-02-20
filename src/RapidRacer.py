@@ -1,8 +1,100 @@
-# coding: utf8
-from urllib import FancyURLopener
-from url_token_defines import *
-from get_rs_file_info import *
+from RapidRacer_defines import *
+from urllib import *
+
 import re
+
+class HostError(Exception):
+    def __init__(self,host):
+        self.__host = host
+
+
+class FiletypeError(Exception):
+    def __init__(self,filetype):
+        self.__filetpye = filetype
+        
+class RSFile():
+    
+    """
+    Describes a file, hosted on rapidshare
+    """
+    
+    def __init__(self, url):
+        
+        self.__opener = FancyURLopener()
+        self.__url_parsed = []
+        
+        self.__parse_url(url)
+        self.__check_url()
+
+        # Detect filename and file ID                                                                                     ###
+        self.__filename = self.__url_parsed[-1]
+        self.__file_id = self.__url_parsed[-2]
+    
+        ### Holt Daten anhand der zuvor definierten URL und speichert sie in den ###
+        ### betreffenden Variablen                                                                          ###
+        self.__get_info()
+
+    def __parse_url(self,url):
+        
+        #Parses the given URL and defines the url_parsed attribute
+        for p in url.split("/"):
+            if len(p):
+                self.__url_parsed.append(p)
+    
+    def __frame_info_url(self, file_id, filename):
+        
+        #Frames a rapidshare URL
+        return RS_API_URL + RS_API_CHECK_FILES + RS_API_ADD_FILE(file_id, filename)
+        
+    def __check_url(self):
+
+        #Checks if the given link is a valid rapidshare-URL
+        
+        if len(self.__url_parsed) < 5:
+            raise SyntaxError("Scheint kein Rapidshare-Link zu sein")
+        if (self.__url_parsed[1] != "rapidshare.com" and
+            self.__url_parsed[1] != "www.rapidshare.com"):
+            raise SyntaxError("Scheint kein Rapidshare-Link zu sein")
+
+    def __get_info(self):
+
+        # Gets the informations and defines the matching variables
+        
+        answer = self.__opener.open(
+        self.__frame_info_url(self.__file_id, self.__filename))
+        
+        (self.__file_id, self.__filename, self.__size, self.__server_id,
+         self.__status, self.__short_host, self.__md5) = answer.read().split(",")
+
+    def reset_url(self, url):
+        
+        """
+        Calls self.__init__ again
+        """
+        
+        self.__init__(url)
+
+        
+    def get_status(self):
+        
+        """
+        Returns the file status. The section about the file status from
+        rapidshare API documentation:
+        
+        ''5:Status integer, which can have the following numeric values:
+            0    = File not found
+            1    = File OK (Anonymous downloading)
+            3    = Server down
+            4    = File marked as illegal
+            5    = Anonymous file locked, because it has more than 10 downloads
+                   already
+            50+n = File OK (TrafficShare direct download type "n" without any logging.)
+            100+n = File OK (TrafficShare direct download type "n" with logging. 
+                           Read our privacy policy to see what is logged.)''
+
+        """
+        
+        return int(self.__status)
 
 class HostError(Exception):
     def __init__(self,host):
@@ -174,7 +266,7 @@ class GoogleSearch(Finder):
         self.__page_nr      = "0"
         self.__host_list    = self.__gen_host_list(host_list)
         self.__keyword_list = (keyword_list+
-                               self.__gen_host_list(host_list)+
+                               self.__host_list+
                                self.__gen_filetype_list(filetype_list))
         self.__url          = self.__gen_search_url()
         
@@ -186,19 +278,19 @@ class GoogleSearch(Finder):
         # one-click-hoster name isn't known. If no list was given this method
         # returns an empty list
         tmp_host_list = []
-        if not host_list == None:
+        if host_list == None:
             return []
             
         for host in host_list:
             host.lower().strip()
             if      host == "rapidshare" or host == "rs":
-                tmp_host_list.append(host)
+                tmp_host_list.append("rapidshare")
             elif    host == "megaupload" or host == "mu":
-                tmp_host_list.append(host)
+                tmp_host_list.append("megaupload")
             elif    host == "hotfile"    or host == "hf":
-                tmp_host_list.append(host)
+                tmp_host_list.append("hotfile")
             elif    host == "uploaded"   or host == "ul":
-                tmp_host_list.append(host)
+                tmp_host_list.append("uploaded")
             else:
                 raise HostError(host)
         return tmp_host_list
@@ -228,6 +320,8 @@ class GoogleSearch(Finder):
                 tmp_filetype_list.append(filetype)
             elif    filetype == "wmv":
                 tmp_filetype_list.append(filetype)
+            elif    filetype == "all":
+                return []
             else:
                 raise FiletypeError(filetype)
         return tmp_filetype_list
@@ -236,7 +330,7 @@ class GoogleSearch(Finder):
         
         # Generates a valid Google search URL
         tmp_url = (GOOGLE_URL + GOOGLE_SEARCH_KEYS(self.__keyword_list)
-                     + AND + GOOGLE_SEARCH_PAGE(self.__page_nr))
+                     + "&" + GOOGLE_SEARCH_PAGE(self.__page_nr))
         return tmp_url
     
     def reload_page(self):
@@ -268,12 +362,8 @@ class GoogleSearch(Finder):
             
         self.__keyword_list = keyword_list
         self.__url = self.__gen_search_url()
-        
-    def get_url(self):
-        
-        Finder.get_url(self)
-
-
+     
+     
 class FilesTubeSearch(Finder):
 
     """
@@ -281,7 +371,6 @@ class FilesTubeSearch(Finder):
     """
     
     def __init__(self, keyword_list, host_list=None, filetype_list=None):
-        
         if not type(host_list) == list:
             raise TypeError("The second parameter has to be a list")
         
@@ -324,6 +413,8 @@ class FilesTubeSearch(Finder):
             filetype.lower().strip()
             if      filetype == "mp3":
                 tmp_filetype_list.append(filetype)
+            elif    filetype == "avi":
+                tmp_filetype_list.append(filetype)
             elif    filetype == "mp4":
                 tmp_filetype_list.append(filetype)
             elif    filetype == "mpeg":
@@ -339,7 +430,7 @@ class FilesTubeSearch(Finder):
             elif    filetype == "all":
                 tmp_filetype_list.append(filetype)
             else:
-                raise HostError(filetype)
+                raise FiletypeError(filetype)
         return tmp_filetype_list
             
     def __gen_search_url(self):
@@ -391,11 +482,3 @@ class FilesTubeSearch(Finder):
             
         self.__host_list = host_list
         self.__url = self.__gen_search_url()
-    
-    def get_url(self):
-        
-        Finder.get_url(self)
-    
-    def get_link_source(self):
-        
-        return self.__link_source
