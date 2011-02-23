@@ -30,7 +30,8 @@ def check_for_rs_links(link):
              options.host == "uploaded"):
         link_list   = finder.get_ul_link_list()
     else:
-        print "ELSE!"
+        print "Unknown one-click-hoster given"
+        exit(4)
 
     if len(link_list):
         link_dict.update({link:link_list})
@@ -205,11 +206,14 @@ if __name__ == "__main__":
         sleep(0.5)
         if options.host == "rapidshare":
             for link in link_dict[site]:
-                if (RSFile(link).get_status()==RS_FILE_OK or
-                    RSFile(link).get_status()==RS_FILE_OK_PLUS):
-                    print " |[ONLINE]\t",link
-                else:
-                    print " |[OFFLINE]\t",link
+                try:
+                    if (RSFile(link).get_status()==RS_FILE_OK or
+                        RSFile(link).get_status()==RS_FILE_OK_PLUS):
+                        print " |[ONLINE]\t",link
+                    else:
+                        print " |[OFFLINE]\t",link
+                except SyntaxError:
+                    print " |[STATUS UNCHECKED]\t",link
         else:
             for link in link_dict[site]:
                 print " |",link
