@@ -31,8 +31,8 @@ class RSFile():
         self.__filename = self.__url_parsed[-1]
         self.__file_id = self.__url_parsed[-2]
 
-        ### Holt Daten anhand der zuvor definierten URL und speichert sie in den ###
-        ### betreffenden Variablen ###
+        ### Holt Daten anhand der zuvor definierten URL und speichert sie
+        ### in den nötigen Variablen
         self.__get_info()
 
     def __parse_url(self,url):
@@ -45,7 +45,8 @@ class RSFile():
     def __frame_info_url(self, file_id, filename):
 
         #Frames a rapidshare URL
-        return RS_API_URL + RS_API_CHECK_FILES + RS_API_ADD_FILE(file_id, filename)
+        return RS_API_URL + RS_API_CHECK_FILES +\
+               RS_API_ADD_FILE(file_id, filename)
 
     def __check_url(self):
 
@@ -65,7 +66,8 @@ class RSFile():
         self.__frame_info_url(self.__file_id, self.__filename))
 
         (self.__file_id, self.__filename, self.__size, self.__server_id,
-         self.__status, self.__short_host, self.__md5) = answer.read().split(",")
+         self.__status, self.__short_host, self.__md5) =\
+         answer.read().split(",")
 
     def reset_url(self, url):
 
@@ -86,16 +88,17 @@ class RSFile():
         rapidshare API documentation:
 
         ''5:Status integer, which can have the following numeric values:
-            0    = File not found
-            1    = File OK (Anonymous downloading)
-            3    = Server down
-            4    = File marked as illegal
-            5    = Anonymous file locked, because it has more than 10 downloads
+            0 = File not found
+            1 = File OK (Anonymous downloading)
+            3 = Server down
+            4 = File marked as illegal
+            5 = Anonymous file locked, because it has more than 10 downloads
                    already
-            50+n = File OK (TrafficShare direct download type "n" without any logging.)
-            100+n = File OK (TrafficShare direct download type "n" with logging. 
-                           Read our privacy policy to see what is logged.)''
-
+            50+n = File OK (TrafficShare direct download type "n"
+                   without any logging.)
+            100+n = File OK (TrafficShare direct download type "n"
+                    with logging. Read our privacy policy to see what
+                    is logged.)''
         """
 
         return int(self.__status)
@@ -114,17 +117,18 @@ class Finder():
         self.__ignored_cont = ignored_cont
         self.__opener       = FancyURLopener()
         self.__opener.addheader("User-Agent",
-                                "Mozilla/5.0 (X11; U; Linux i686)Gecko/20071127 Firefox/2.0.0.11")
+                           "Mozilla/5.0 (X11; U; Linuxi686)Gecko/20071127"+
+                           "Firefox/2.0.0.11")
 
         self.__setup_finder(url)
 
     def __setup_finder(self,url):
 
         # defines some essential variables
-        self.__url          = url
-        self.__page         = self.__opener.open(self.__url)
-        self.__content      = self.__page.read()
-        self.__link_list    = self.__get_any_links_on_site(self.__ignored_cont)
+        self.__url       = url
+        self.__page      = self.__opener.open(self.__url)
+        self.__content   = self.__page.read()
+        self.__link_list = self.__get_any_links_on_site(self.__ignored_cont)
 
     def __get_any_links_on_site(self, ignored_cont=[]):
 
@@ -166,8 +170,10 @@ class Finder():
 
         # Get page content and search everything, that looks like a
         # rapidshare link via regexp
-        link_list = (re.findall(r"http://www.rapidshare.com/files" + REGEXP_URL, self.__content) +
-                     re.findall(r"http://rapidshare.com/files" + REGEXP_URL    , self.__content))
+        link_list = (re.findall(r"http://www.rapidshare.com/files" +
+                     REGEXP_URL, self.__content) +
+                     re.findall(r"http://rapidshare.com/files" +
+                     REGEXP_URL, self.__content))
 
         return link_list
 
@@ -180,8 +186,10 @@ class Finder():
 
         # Get page content and search everything, that looks like a
         # megaupload link via regexp
-        link_list = (re.findall(r"http://www.megaupload.com/" + REGEXP_URL, self.__content) +
-                     re.findall(r"http://megaupload.com/" + REGEXP_URL    , self.__content))
+        link_list = (re.findall(r"http://www.megaupload.com/" +
+                     REGEXP_URL, self.__content) +
+                     re.findall(r"http://megaupload.com/" + REGEXP_URL,
+                     self.__content))
 
         return link_list
 
@@ -194,8 +202,10 @@ class Finder():
 
         # Get page content and search everything, that looks like a
         # hotfile link via regexp
-        link_list = (re.findall(r"http://www.hotfile.com/" + REGEXP_URL, self.__content) +
-                     re.findall(r"http://hotfile.com/" + REGEXP_URL    , self.__content))
+        link_list = (re.findall(r"http://www.hotfile.com/" +
+                     REGEXP_URL, self.__content) +
+                     re.findall(r"http://hotfile.com/" + REGEXP_URL,
+                     self.__content))
 
         return link_list
 
@@ -208,8 +218,10 @@ class Finder():
 
         # Get page content and search everything, that looks like a
         # hotfile link via regexp
-        link_list = (re.findall(r"http://www.uploaded.to/" + REGEXP_URL, self.__content) +
-                     re.findall(r"http://uploaded.to/" + REGEXP_URL    , self.__content))
+        link_list = (re.findall(r"http://www.uploaded.to/" +
+                     REGEXP_URL, self.__content) +
+                     re.findall(r"http://uploaded.to/" + REGEXP_URL,
+                     self.__content))
 
         return link_list
 
@@ -237,13 +249,13 @@ class Finder():
 
         self.__ignored_cont = ignored_cont
 
-    def reload_page(self,url):
+    def reload_page(self):
 
         """
         Reloads the current page.
         """
 
-        self.__setup_finder(url)
+        self.__setup_finder(self.__url)
 
 
 class GoogleSearch(Finder):
@@ -252,7 +264,7 @@ class GoogleSearch(Finder):
     Describes a search at Google.com. Inherits form 'Finder' 
     """
 
-    def __init__(self, keyword_list, host_list=None, filetype_list=None):
+    def __init__(self, keyword_list, host_list=None):
 
         if not type(host_list) == list:
             raise TypeError("The second parameter has to be a list")
@@ -261,17 +273,14 @@ class GoogleSearch(Finder):
         self.__page_nr      = "0"
         self.__host_list    = self.__gen_host_list(host_list)
         self.__keyword_list = (keyword_list+
-                               self.__host_list+
-                               self.__gen_filetype_list(filetype_list))
-        self.__url          = self.__gen_search_url()
-
+                               self.__host_list)
         Finder.__init__(self, self.__url, ["google"])
 
     def __gen_host_list(self,host_list):
 
         # Return a list of given hosts and raise a HostError if the given
-        # one-click-hoster name isn't known. If no list was given this method
-        # returns an empty list
+        # one-click-hoster name isn't known. If no list was given this
+        # method returns an empty list
         tmp_host_list = []
         if host_list == None:
             return []
@@ -290,47 +299,12 @@ class GoogleSearch(Finder):
                 raise HostError(host)
         return tmp_host_list
 
-    def __gen_filetype_list(self, filetype_list):
-
-        # Return a list of given filetype and raise a HostError if the given
-        # one-click-hoster name isn't known. If no list was given this method
-        # returns an empty list
-        tmp_filetype_list = []
-        if filetype_list == None:
-            return []
-
-        for filetype in filetype_list:
-            filetype.lower().strip()
-            if      filetype == "mp3":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "mp4":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "mpeg":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "mpg":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "rar":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "zip":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "wmv":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "all":
-                return []
-            else:
-                raise FiletypeError(filetype)
-        return tmp_filetype_list
-
     def __gen_search_url(self):
 
         # Generates a valid Google search URL
         tmp_url = (GOOGLE_URL + GOOGLE_SEARCH_KEYS(self.__keyword_list)
                      + "&" + GOOGLE_SEARCH_PAGE(self.__page_nr))
         return tmp_url
-
-    def reload_page(self):
-
-        Finder.reload_page(self,self.__url)
 
     def set_page_nr(self, page_nr):
 
@@ -343,20 +317,7 @@ class GoogleSearch(Finder):
             raise TypeError("load_page_nr takes an integer as argument")
 
         self.__page_nr = str(page_nr)
-        self.__url = self.__gen_search_url()
-
-    def set_keyords(self, keyword_list):
-
-        """
-        Sets a new list of words to search for and overwrites the old one.
-        """
-
-        # Checks if page_nr is an instance from 'list'
-        if type(keyword_list) == list:
-            raise TypeError("load_keywords takes a list as argument")
-
-        self.__keyword_list = keyword_list
-        self.__url = self.__gen_search_url()
+        Finder.__url = self.__gen_search_url()
 
 
 class FilesTubeSearch(Finder):
@@ -373,7 +334,6 @@ class FilesTubeSearch(Finder):
         self.__keyword_list     = keyword_list
         self.__host_list        = self.__gen_host_list(host_list)
         self.__filetype_list    = self.__gen_filetype_list(filetype_list)
-        self.__url              = self.__gen_search_url()
         Finder.__init__(self, self.__url)
 
     def __gen_host_list(self,host_list):
@@ -438,10 +398,6 @@ class FilesTubeSearch(Finder):
                    FT_SEARCH_FILETYPE(self.__filetype_list))
         return tmp_url
 
-    def reload_page(self):
-
-        Finder.reload_page(self,self.__url)
-
     def set_page_nr(self, page_nr):
 
         """
@@ -452,28 +408,4 @@ class FilesTubeSearch(Finder):
             raise TypeError("load_page_nr takes an integer as argument")
 
         self.__page_nr = str(page_nr)
-        self.__url = self.__gen_search_url()
-
-    def set_keyords(self, keyword_list):
-
-        """
-        Sets a new list of words to search for and overwrites the old one.
-        """
-
-        if type(keyword_list) == list:
-            raise TypeError("load_keywords takes a list as argument")
-
-        self.__keyword_list = keyword_list
-        self.__url = self.__gen_search_url()
-
-    def set_hosts(self, host_list):
-
-        """
-        Sets a new list of one-click-hosters and overwrites the old one.
-        """
-
-        if type(host_list) == list:
-            raise TypeError("load_hosts takes a list as argument")
-
-        self.__host_list = host_list
-        self.__url = self.__gen_search_url()
+        Finder.__url = self.__gen_search_url()
