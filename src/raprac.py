@@ -89,7 +89,7 @@ class SearchAtFilesTube(threading.Thread):
             # Load the next page from the filestube search
             self.__nr+=1
             self.__ftsearch.set_page_nr(self.__nr)
-            self.__ftsearch.reload_page()
+            self.__ftsearch.reload_finder()
 
 
 class SearchAtGoogle(threading.Thread):
@@ -101,8 +101,7 @@ class SearchAtGoogle(threading.Thread):
         self.__checked_links = []
         try:
 
-            self.__gsearch = GoogleSearch(args,[options.host],
-                                          [options.filetype])
+            self.__gsearch = GoogleSearch(args,[options.host])
 
         # If the given one-click-hoster isn't known, the link_finder
         # will raise a HostError exception
@@ -134,7 +133,7 @@ class SearchAtGoogle(threading.Thread):
             # Load the next page from the filestube search
             self.__nr+=1
             self.__gsearch.set_page_nr(self.__nr)
-            self.__gsearch.reload_page()
+            self.__gsearch.reload_finder()
 
 
 if __name__ == "__main__":
@@ -201,8 +200,9 @@ if __name__ == "__main__":
     if options.debug:
         print 2*"\n"
     # Checks the status of the found rapidshare links
+    nr = 1
     for site in link_dict.keys():
-        print site
+        print "\n["+str(nr)+"]",site
         sleep(0.5)
         if options.host == "rapidshare":
             for link in link_dict[site]:
@@ -217,3 +217,4 @@ if __name__ == "__main__":
         else:
             for link in link_dict[site]:
                 print " |",link
+        nr+=1

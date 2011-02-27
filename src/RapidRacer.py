@@ -236,14 +236,18 @@ class Finder():
         """
 
         self.__ignored_cont = ignored_cont
+        
+    def set_url(self,url):
+        
+        self.__url = url
 
-    def reload_page(self,url):
+    def reload_finder(self):
 
         """
-        Reloads the current page.
+        Reloads the "Finder".
         """
-
-        self.__setup_finder(url)
+        
+        self.__setup_finder(self.__url)
 
 
 class GoogleSearch(Finder):
@@ -252,7 +256,7 @@ class GoogleSearch(Finder):
     Describes a search at Google.com. Inherits form 'Finder' 
     """
 
-    def __init__(self, keyword_list, host_list=None, filetype_list=None):
+    def __init__(self, keyword_list, host_list=None):
 
         if not type(host_list) == list:
             raise TypeError("The second parameter has to be a list")
@@ -261,11 +265,9 @@ class GoogleSearch(Finder):
         self.__page_nr      = "0"
         self.__host_list    = self.__gen_host_list(host_list)
         self.__keyword_list = (keyword_list+
-                               self.__host_list+
-                               self.__gen_filetype_list(filetype_list))
-        self.__url          = self.__gen_search_url()
+                               self.__host_list)
 
-        Finder.__init__(self, self.__url, ["google"])
+        Finder.__init__(self, self.__gen_search_url(), ["google"])
 
     def __gen_host_list(self,host_list):
 
@@ -290,37 +292,6 @@ class GoogleSearch(Finder):
                 raise HostError(host)
         return tmp_host_list
 
-    def __gen_filetype_list(self, filetype_list):
-
-        # Return a list of given filetype and raise a HostError if the given
-        # one-click-hoster name isn't known. If no list was given this method
-        # returns an empty list
-        tmp_filetype_list = []
-        if filetype_list == None:
-            return []
-
-        for filetype in filetype_list:
-            filetype.lower().strip()
-            if      filetype == "mp3":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "mp4":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "mpeg":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "mpg":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "rar":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "zip":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "wmv":
-                tmp_filetype_list.append(filetype)
-            elif    filetype == "all":
-                return []
-            else:
-                raise FiletypeError(filetype)
-        return tmp_filetype_list
-
     def __gen_search_url(self):
 
         # Generates a valid Google search URL
@@ -328,35 +299,18 @@ class GoogleSearch(Finder):
                      + "&" + GOOGLE_SEARCH_PAGE(self.__page_nr))
         return tmp_url
 
-    def reload_page(self):
-
-        Finder.reload_page(self,self.__url)
 
     def set_page_nr(self, page_nr):
 
         """
-        Sets the new page number and overwrites the old one.
+        Sets the new page number and overwrites the old one
         """
 
-        # Checks if page_nr is an instance from 'list'
         if type(page_nr) == str:
             raise TypeError("load_page_nr takes an integer as argument")
 
         self.__page_nr = str(page_nr)
-        self.__url = self.__gen_search_url()
-
-    def set_keyords(self, keyword_list):
-
-        """
-        Sets a new list of words to search for and overwrites the old one.
-        """
-
-        # Checks if page_nr is an instance from 'list'
-        if type(keyword_list) == list:
-            raise TypeError("load_keywords takes a list as argument")
-
-        self.__keyword_list = keyword_list
-        self.__url = self.__gen_search_url()
+        Finder.set_url(self,self.__gen_search_url())
 
 
 class FilesTubeSearch(Finder):
@@ -373,8 +327,7 @@ class FilesTubeSearch(Finder):
         self.__keyword_list     = keyword_list
         self.__host_list        = self.__gen_host_list(host_list)
         self.__filetype_list    = self.__gen_filetype_list(filetype_list)
-        self.__url              = self.__gen_search_url()
-        Finder.__init__(self, self.__url)
+        Finder.__init__(self, self.__gen_search_url())
 
     def __gen_host_list(self,host_list):
 
@@ -438,10 +391,6 @@ class FilesTubeSearch(Finder):
                    FT_SEARCH_FILETYPE(self.__filetype_list))
         return tmp_url
 
-    def reload_page(self):
-
-        Finder.reload_page(self,self.__url)
-
     def set_page_nr(self, page_nr):
 
         """
@@ -452,28 +401,4 @@ class FilesTubeSearch(Finder):
             raise TypeError("load_page_nr takes an integer as argument")
 
         self.__page_nr = str(page_nr)
-        self.__url = self.__gen_search_url()
-
-    def set_keyords(self, keyword_list):
-
-        """
-        Sets a new list of words to search for and overwrites the old one.
-        """
-
-        if type(keyword_list) == list:
-            raise TypeError("load_keywords takes a list as argument")
-
-        self.__keyword_list = keyword_list
-        self.__url = self.__gen_search_url()
-
-    def set_hosts(self, host_list):
-
-        """
-        Sets a new list of one-click-hosters and overwrites the old one.
-        """
-
-        if type(host_list) == list:
-            raise TypeError("load_hosts takes a list as argument")
-
-        self.__host_list = host_list
-        self.__url = self.__gen_search_url()
+        Finder.set_url(self,self.__gen_search_url())
